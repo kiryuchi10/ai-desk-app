@@ -1,0 +1,11 @@
+Flask
+flask-cors
+python-dotenv
+openai
+mysql-connector-python
+sqlalchemy
+whisper
+torch
+ffmpeg-python
+librosa
+scikit-learn
