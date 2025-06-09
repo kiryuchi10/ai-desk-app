@@ -1,19 +1,51 @@
-import pytesseract
+# extractor.py
+# Main dispatcher for different extraction modes + preview image support
+
+import os
+import pandas as pd
+
+from PIL import ImageTk, Image
+import tkinter as tk
+from tkinter import Tk, Label, Button
+from PIL import Image, ImageTk
 from pdf2image import convert_from_path
-import numpy as np
-import cv2
+import os
+from .ocr_table import ocr_extract
+from .cv_table import cv_extract
+from .hybrid_logic import hybrid_extract
+from .preview import generate_preview
 
-def extract_by_mode(file_path, mode):
-    page = convert_from_path(file_path, dpi=200)[0]
-    image = cv2.cvtColor(np.array(page), cv2.COLOR_RGB2BGR)
+def extract_data(file_path, mode):
+    """
+    Routes the PDF file to the correct extraction function based on the mode.
+    Calls generate_preview() before starting extraction.
 
-    if mode == 'ocr':
-        return pytesseract.image_to_string(image)
+    Args:
+        file_path (str): Path to the PDF file.
+        mode (str): One of 'ocr', 'table', 'hybrid'.
 
-    elif mode == 'table':
-        # Just simulate table detection
-        return "Detected table and structured rows (simulate)."
+    Returns:
+        pd.DataFrame | None: Extracted data or None if cancelled
+    """
 
-    elif mode == 'hybrid':
-        text = pytesseract.image_to_string(image)
-        return f"[Hybrid] Table failed. OCR Fallback:\n{text}"
+    # ✅ Preview and confirm
+    proceed = generate_preview(file_path)
+    if not proceed:
+        print("[INFO] Operation cancelled by user.")
+        return None
+
+    # ✅ Run extraction logic
+    if mode == "ocr":
+        print("[INFO] Running OCR-only extraction...")
+        return ocr_extract(file_path)
+
+    elif mode == "table":
+        print("[INFO] Running table-only (OpenCV) extraction...")
+        return cv_extract(file_path)
+
+    elif mode == "hybrid":
+        print("[INFO] Running hybrid extraction (table structure + OCR)...")
+        return hybrid_extract(file_path)
+
+    else:
+        raise ValueError("Invalid mode: must be one of 'ocr', 'table', 'hybrid'")

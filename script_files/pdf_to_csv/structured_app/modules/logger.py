@@ -1,27 +1,28 @@
+# modules/logger.py
 import sqlite3
 import os
 
-def log_feedback(file_path, mode, confirmation):
-    db_path = os.path.join(os.path.dirname(__file__), "../extraction_feedback.db")
+def log_result(file_path, mode, output_file, success=True, notes=""):
+    db_path = os.path.join(os.path.dirname(__file__), "..", "database", "feedback.db")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS feedback (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        file_name TEXT,
-        resolution INTEGER,
-        detected_mode TEXT,
-        user_confirmation TEXT,
-        font TEXT,
-        feedback_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
+        CREATE TABLE IF NOT EXISTS logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            file_path TEXT,
+            mode TEXT,
+            output_file TEXT,
+            success INTEGER,
+            notes TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
     ''')
 
     cursor.execute('''
-    INSERT INTO feedback (file_name, resolution, detected_mode, user_confirmation, font)
-    VALUES (?, ?, ?, ?, ?)
-    ''', (file_path, 200, mode, confirmation, "Unknown"))
+        INSERT INTO logs (file_path, mode, output_file, success, notes)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (file_path, mode, output_file, int(success), notes))
 
     conn.commit()
     conn.close()

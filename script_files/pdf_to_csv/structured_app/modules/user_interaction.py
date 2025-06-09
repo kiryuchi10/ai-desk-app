@@ -1,20 +1,21 @@
-import tkinter as tk
-from tkinter import simpledialog, messagebox
-import matplotlib.pyplot as plt
-import cv2
+# modules/user_interaction.py
 
-def ask_mode():
-    root = tk.Tk()
-    root.withdraw()
-    mode = simpledialog.askstring("Mode Selection", "Enter extraction mode: table / ocr / hybrid")
-    return mode.lower()
+def get_extraction_mode():
+    print("Select extraction mode:")
+    print("1. OCR only")
+    print("2. Table detection only")
+    print("3. Hybrid (table + OCR)")
+    choice = input("Enter choice (1/2/3): ").strip()
+    if choice == "1":
+        return "ocr"
+    elif choice == "2":
+        return "table"
+    elif choice == "3":
+        return "hybrid"
+    else:
+        print("Invalid choice. Defaulting to OCR.")
+        return "ocr"
 
-def confirm_preview(preview_img):
-    plt.imshow(cv2.cvtColor(preview_img, cv2.COLOR_BGR2RGB))
-    plt.title("Confirm preview: Close image to continue")
-    plt.axis('off')
-    plt.show()
-
-    root = tk.Tk()
-    root.withdraw()
-    return messagebox.askyesno("Confirm", "Proceed with this detection?")
+def confirm_preview():
+    confirm = input("Is the table preview correct? (y/n): ").strip().lower()
+    return confirm == "y"
