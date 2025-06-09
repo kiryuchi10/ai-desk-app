@@ -3,33 +3,32 @@ import ModelSelector from "./ModelSelector";
 import UploadForm from "./UploadForm";
 import TablePreview from "./TablePreview";
 import FeedbackPrompt from "./FeedbackPrompt";
+import "./ParentComponent.css";  //  import styles
 
 const ParentComponent = () => {
   const [mode, setMode] = useState("ocr");
   const [imageSrc, setImageSrc] = useState("");
   const [feedback, setFeedback] = useState("");
 
-  const handleModeSelect = (selected) => {
-    console.log("Selected mode:", selected);
-    setMode(selected);
-  };
-
-  const handlePreview = (imgUrl) => {
-    setImageSrc(imgUrl);
-  };
-
-  const handleFeedback = (response) => {
-    setFeedback(response);
-    console.log("User feedback:", response);
-  };
-
   return (
-    <div>
+    <div className="container">
       <h1>Smart PDF Extractor</h1>
-      <ModelSelector onSelect={handleModeSelect} />
-      <UploadForm mode={mode} onPreview={handlePreview} />
-      <TablePreview imageSrc={imageSrc} />
-      <FeedbackPrompt onConfirm={handleFeedback} />
+
+      <div className="section">
+        <ModelSelector onSelect={setMode} />
+      </div>
+
+      <div className="section">
+        <UploadForm mode={mode} onPreview={setImageSrc} />
+      </div>
+
+      <div className="section">
+        <TablePreview imageSrc={imageSrc} />
+      </div>
+
+      <div className="section">
+        <FeedbackPrompt onConfirm={setFeedback} />
+      </div>
     </div>
   );
 };

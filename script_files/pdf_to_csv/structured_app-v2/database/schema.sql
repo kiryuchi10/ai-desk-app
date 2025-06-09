@@ -1,8 +1,9 @@
--- schema.sql
-CREATE TABLE feedback (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  filename TEXT,
-  mode TEXT,
-  performance TEXT,
-  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS feedback (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    filename TEXT,
+    mode TEXT,
+    dpi INTEGER,
+    resolution INTEGER,
+    user_confirmation TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );

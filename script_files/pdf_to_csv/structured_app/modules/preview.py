@@ -47,24 +47,62 @@ from PIL import Image, ImageTk
 from pdf2image import convert_from_path
 import os
 
+# modules/preview_pyqt.py
+
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget, QHBoxLayout
+from PyQt5.QtGui import QPixmap
+import sys
+import os
+
 def generate_preview(file_path):
-    root = Tk()
-    root.title("Preview")
+    """
+    Displays a preview image with Yes/No buttons using PyQt5.
+    Returns True if user confirms, False otherwise.
+    """
+    class PreviewWindow(QWidget):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("PDF Preview Confirmation")
+            self.setGeometry(100, 100, 850, 1050)
+            self.result = False
 
-    img = Image.open("preview_with_grid.png").resize((800, 1000))
-    tk_img = ImageTk.PhotoImage(img)  # Must happen after root
+            layout = QVBoxLayout()
 
-    label = Label(root, image=tk_img)
-    label.image = tk_img              # ✅ Prevent garbage collection
-    label.pack()
+            # Load the preview image
+            preview_path = "preview_with_grid.png"
+            if not os.path.exists(preview_path):
+                print("[ERROR] Preview image not found.")
+                sys.exit()
 
-    result = {"user_choice": False}
+            pixmap = QPixmap(preview_path).scaled(800, 1000)
+            self.label = QLabel()
+            self.label.setPixmap(pixmap)
 
-    def on_yes(): result["user_choice"] = True; root.destroy()
-    def on_no(): root.destroy()
+            layout.addWidget(self.label)
 
-    Button(root, text="Yes", command=on_yes).pack(side="left")
-    Button(root, text="No", command=on_no).pack(side="right")
+            # Buttons
+            button_layout = QHBoxLayout()
+            yes_btn = QPushButton("Yes")
+            no_btn = QPushButton("No")
+            yes_btn.clicked.connect(self.yes_clicked)
+            no_btn.clicked.connect(self.no_clicked)
+            button_layout.addWidget(yes_btn)
+            button_layout.addWidget(no_btn)
 
-    root.mainloop()
-    return result["user_choice"]
+            layout.addLayout(button_layout)
+            self.setLayout(layout)
+
+        def yes_clicked(self):
+            self.result = True
+            self.close()
+
+        def no_clicked(self):
+            self.result = False
+            self.close()
+
+    app = QApplication(sys.argv)
+    preview_window = PreviewWindow()
+    preview_window.show()
+    app.exec_()
+
+    return preview_window.result
