@@ -5,6 +5,7 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 import os
+import cv2
 
 def ocr_extract(file_path, dpi=300, poppler_path=r"C:\\poppler\\poppler-24.08.0\\Library\\bin"):
     images = convert_from_path(file_path, dpi=dpi, poppler_path=poppler_path)

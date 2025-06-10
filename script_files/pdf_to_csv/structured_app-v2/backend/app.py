@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify
 import os
 import pandas as pd
-from extractor import extract_data
+from extractor.extractor import extract_data
 from services.logger import log_feedback
 import sys
 
