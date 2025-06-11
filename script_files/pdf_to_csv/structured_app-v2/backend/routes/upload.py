@@ -1,14 +1,14 @@
-# backend/routes/upload.py
-
 from flask import Blueprint, request, jsonify
 import os
-from backend.extractor.ocr_table import ocr_extract
-from backend.extractor.cv_table import cv_extract
-from backend.extractor.hybrid_logic import hybrid_extract
-from backend.services.logger import log_feedback
+from extractor.ocr_table import ocr_extract
+from extractor.cv_table import cv_extract
+from extractor.hybrid_logic import hybrid_extract
+from services.logger import log_feedback
 
 UPLOAD_FOLDER = "backend/uploads"
+RESULT_FOLDER = "backend/results"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
 
 upload_bp = Blueprint('upload', __name__)
 
@@ -24,22 +24,37 @@ def upload_file():
     save_path = os.path.join(UPLOAD_FOLDER, pdf.filename)
     pdf.save(save_path)
 
+    print(f"[INFO] Upload received: {pdf.filename} | mode={mode} | dpi={dpi}")
+
     try:
-        # Route to the correct extractor
+        # Dispatch to extraction mode
         if mode == 'ocr':
-            data = ocr_extract(save_path)
+            df = ocr_extract(save_path)
         elif mode == 'table':
-            data = cv_extract(save_path)
+            df = cv_extract(save_path)
         elif mode == 'hybrid':
-            data = hybrid_extract(save_path)
+            df = hybrid_extract(save_path, dpi=dpi)
         else:
-            return jsonify({"status": "error", "message": "Invalid mode"}), 400
+            return jsonify({"status": "error", "message": "Invalid extraction mode"}), 400
 
-        # Optionally log metadata
-        log_feedback(resolution=dpi, detected_mode=mode, user_confirmation="pending")
+        if df is None or df.empty:
+            return jsonify({
+                "status": "error",
+                "message": "No data extracted. Try increasing DPI or using another mode."
+            }), 400
 
-        return jsonify({"status": "success", "data": data})
+        csv_path = os.path.join(RESULT_FOLDER, pdf.filename.replace(".pdf", ".csv"))
+        df.to_csv(csv_path, index=False)
+
+        log_feedback(pdf.filename, mode, dpi, resolution=dpi, user_confirmation="pending")
+
+        return jsonify({
+            "status": "success",
+            "message": "Extraction completed",
+            "csv_path": csv_path,
+            "row_count": len(df)
+        })
 
     except Exception as e:
         print(f"[ERROR] Extraction failed: {e}")
-        return jsonify({"status": "error", "message": "Extraction failed"}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500

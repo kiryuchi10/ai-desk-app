@@ -3,12 +3,17 @@ import ModelSelector from "./ModelSelector";
 import UploadForm from "./UploadForm";
 import TablePreview from "./TablePreview";
 import FeedbackPrompt from "./FeedbackPrompt";
-import "./ParentComponent.css";  //  import styles
+import "./ParentComponent.css";
 
 const ParentComponent = () => {
   const [mode, setMode] = useState("ocr");
   const [imageSrc, setImageSrc] = useState("");
-  const [feedback, setFeedback] = useState("");
+  const [, setFeedback] = useState("");  // ✅ suppress ESLint if unused
+
+  const handleFeedback = (res) => {
+    setFeedback(res);
+    console.log("User feedback:", res);
+  };
 
   return (
     <div className="container">
@@ -27,7 +32,7 @@ const ParentComponent = () => {
       </div>
 
       <div className="section">
-        <FeedbackPrompt onConfirm={setFeedback} />
+        <FeedbackPrompt onConfirm={handleFeedback} />
       </div>
     </div>
   );
