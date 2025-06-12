@@ -6,9 +6,10 @@ load_dotenv()  # Make sure .env file is in the project root
 
 DB_CONFIG = {
     "host": os.getenv("MYSQL_HOST", "localhost"),
+    "port": int(os.getenv("MYSQL_PORT", 3306)),
     "user": os.getenv("MYSQL_USER", "root"),
     "password": os.getenv("MYSQL_PASSWORD", ""),
-    "database": os.getenv("MYSQL_DB", "ai_feedback")
+    "database": os.getenv("MYSQL_DB", "extractor")
 }
 
 def log_feedback(filename, mode, dpi, resolution, user_confirmation):
