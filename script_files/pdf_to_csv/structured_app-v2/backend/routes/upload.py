@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import os
-from extractor.ocr_table import ocr_extract
-from extractor.cv_table import cv_extract
+from extractor.ocr_table import extract_ocr
+from extractor.cv_table import extract_cv
 from extractor.hybrid_logic import hybrid_extract
 from services.logger import log_feedback
 
@@ -29,9 +29,9 @@ def upload_file():
     try:
         # Dispatch to extraction mode
         if mode == 'ocr':
-            df = ocr_extract(save_path)
+            df = extract_ocr(save_path)
         elif mode == 'table':
-            df = cv_extract(save_path)
+            df = extract_cv(save_path)
         elif mode == 'hybrid':
             df = hybrid_extract(save_path, dpi=dpi)
         else:

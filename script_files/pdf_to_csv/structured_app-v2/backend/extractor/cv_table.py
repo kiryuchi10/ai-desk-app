@@ -6,7 +6,7 @@ import pandas as pd
 import os
 from PIL import Image
 
-def cv_extract(file_path, dpi=300, poppler_path=r"C:\\poppler\\poppler-24.08.0\\Library\\bin"):
+def extract_cv(file_path, dpi=300, poppler_path=r"C:\\poppler\\poppler-24.08.0\\Library\\bin"):
     images = convert_from_path(file_path, dpi=dpi, poppler_path=poppler_path)
     image = images[0]  # Only first page
 
