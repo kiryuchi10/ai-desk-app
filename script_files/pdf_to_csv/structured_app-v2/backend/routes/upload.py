@@ -3,6 +3,7 @@ import os
 from extractor.ocr_table import extract_ocr
 from extractor.cv_table import extract_cv
 from extractor.hybrid_logic import hybrid_extract
+from extractor.tabular_extractor import extract_tabula  #Add this line
 from services.logger import log_feedback
 
 UPLOAD_FOLDER = "backend/uploads"
@@ -34,6 +35,8 @@ def upload_file():
             df = extract_cv(save_path)
         elif mode == 'hybrid':
             df = hybrid_extract(save_path, dpi=dpi)
+        elif mode == 'tabular':
+            df = extract_tabula(save_path)  # Add tabular mode handling
         else:
             return jsonify({"status": "error", "message": "Invalid extraction mode"}), 400
 

@@ -1,16 +1,18 @@
-// ModelSelector.jsx
 import React from 'react';
 
 const ModelSelector = ({ onSelect }) => {
   const handleChange = (e) => {
-    onSelect(e.target.value); // 👈 This line causes the error if onSelect is undefined
+    if (onSelect) {
+      onSelect(e.target.value);
+    }
   };
 
   return (
-    <select onChange={handleChange}>
+    <select onChange={handleChange} defaultValue="ocr">
       <option value="ocr">OCR</option>
-      <option value="table">Table</option>
+      <option value="cv">CV</option>
       <option value="hybrid">Hybrid</option>
+      <option value="tabular">Tabular</option> {/* ✅ Added */}
     </select>
   );
 };
